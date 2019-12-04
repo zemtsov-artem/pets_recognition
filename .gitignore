@@ -1,0 +1,7 @@
+# Images files
+images/
+
+__pycache__/
+
+# generated data
+*.csv
