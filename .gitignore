@@ -5,3 +5,4 @@ __pycache__/
 
 # generated data
 *.csv
+fully_connected/fc_checkpoints/
