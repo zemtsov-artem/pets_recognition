@@ -6,62 +6,87 @@
 библиотекой глубокого обучения Keras на примере
 полностью связанных нейронных сетей.
 
-В рамках данной лабораторной работы будет решаться задача классификации пород кошечек/собачек
-
-Пусть ![equation](https://latex.codecogs.com/gif.latex?X) — множество изображений, ![equation](https://latex.codecogs.com/gif.latex?Y) — множество наименований классов. 
-
-Математическая формулировка:
-Существует неизвестная целевая зависимость — отображение ![equation](https://latex.codecogs.com/gif.latex?y%5E*%20%3A%20X%20%5Crightarrow%20Y), значения которой известны только 
-на объектах конечной обучающей выборки ![equation](https://latex.codecogs.com/gif.latex?X%5Em%20%3D%20%5C%7B%20%28x_1%2C%20y_1%29%2C%20...%2C%20%28x_m%2C%20y_m%29%20%5C%7D). 
-Требуется построить алгоритм ![equation](https://latex.codecogs.com/gif.latex?a%20%3D%20X%20%5Crightarrow%20Y), способный классифицировать
-произвольный объект ![equation](https://latex.codecogs.com/gif.latex?x%20%5Cin%20X).
-
-## Описание множества данных
-
+В рамках данной лабораторной работы будет решаться задача классификации пород кошечек/собачек.
 
 Используемые данные [The Oxford-IIIT Pet Dataset](https://www.kaggle.com/tanlikesmath/the-oxfordiiit-pet-dataset)
 
+
 Обучающая выборка содержит 37 классов с различными породами кошечек и собачек. На каждый класс имеется около 200 изображений. На изображениях животные могут быть изображены в различных положениях, при разных условиях света.
 
-|Elements|Category|
+## Описание данных
+
+|Category|Elements count|
 |------------------------------|-------|
-|200   | 	Birman                     |
-|200   | 	saint_bernard			   |                     
-|191   | 	staffordshire_bull_terrier |                     
-|200   | 	japanese_chin              |
-|200   | 	american_pit_bull_terrier  |
-|200   | 	newfoundland               |
-|199   | 	scottish_terrier           |
-|200   | 	chihuahua                  |
-|200   | 	american_bulldog           |
-|200   | 	Sphynx                     |
-|200   | 	basset_hound               |
-|200   | 	keeshond                   |
-|200   | 	British_Shorthair          |
-|200   | 	Persian                    |
-|200   | 	great_pyrenees             |
-|200   | 	english_setter             |
-|200   | 	samoyed                    |
-|200   | 	Siamese                    |
-|200   | 	Maine_Coon                 |
-|200   | 	pomeranian                 |
-|200   | 	Bengal                     |
-|200   | 	shiba_inu                  |
-|200   | 	Bombay                     |
-|200   | 	yorkshire_terrier          |
-|200   | 	leonberger                 |
-|200   | 	miniature_pinscher         |
-|200   | 	pug                        |
-|200   | 	Ragdoll                    |
-|200   | 	Egyptian_Mau               |
-|200   | 	german_shorthaired         |
-|200   | 	Russian_Blue               |
-|200   | 	Abyssinian                 |
-|200   | 	boxer                      |
-|200   | 	beagle                     |
-|200   | 	havanese                   |
-|200   | 	wheaten_terrier            |
-|200   | 	english_cocker_spaniel	   |
+| 	Birman                     |200    |
+| 	saint_bernard			   |200    |                     
+| 	staffordshire_bull_terrier |191    |                     
+| 	japanese_chin              |200    |
+| 	american_pit_bull_terrier  |200    |
+| 	newfoundland               |200    |
+| 	scottish_terrier           |199    |
+| 	chihuahua                  |200    |
+| 	american_bulldog           |200    |
+| 	Sphynx                     |200    |
+| 	basset_hound               |200    |
+| 	keeshond                   |200    |
+| 	British_Shorthair          |200    |
+| 	Persian                    |200    |
+| 	great_pyrenees             |200    |
+| 	english_setter             |200    |
+| 	samoyed                    |200    |
+| 	Siamese                    |200    |
+| 	Maine_Coon                 |200    |
+| 	pomeranian                 |200    |
+| 	Bengal                     |200    |
+| 	shiba_inu                  |200    |
+| 	Bombay                     |200    |
+| 	yorkshire_terrier          |200    |
+| 	leonberger                 |200    |
+| 	miniature_pinscher         |200    |
+| 	pug                        |200    |
+| 	Ragdoll                    |200    |
+| 	Egyptian_Mau               |200    |
+| 	german_shorthaired         |200    |
+| 	Russian_Blue               |200    |
+| 	Abyssinian                 |200    |
+| 	boxer                      |200    |
+| 	beagle                     |200    |
+| 	havanese                   |200    |
+| 	wheaten_terrier            |200    |
+| 	english_cocker_spaniel	   |200    |
+
+
+## Примеры изображений:
+
+![All classes preview](./resources/all_classes_preview.png)
+
+
+## Анализ данных:
+
+Изображения являются разношерстными по слeдующим характеристикам:
+
+- Каждое изображение имеет разный размер.
+
+Показатель | Значение |
+------------ | ------------
+average height | 390.9136671177267
+average weight | 436.7451962110961
+minSize 	   | 137x103
+maxSize 	   | 3264x2448
+
+-  Информативность изображения (наличие посторонних предметов, возраст животных, изображения необязательно имеют квадратную форму, животное не обязательно находится в центре изображения)
+
+Примеры принадлежащие к классу Рэгдолл.
+
+![](resources/Ragdoll_117.jpg)
+![](resources/Ragdoll_140.jpg)
+![](resources/Ragdoll_141.jpg)
+![](resources/Ragdoll_162.jpg)
+![](resources/Ragdoll_165.jpg)
+![](resources/Ragdoll_180.jpg)
+![](resources/Ragdoll_181.jpg)
+![](resources/Ragdoll_199.jpg)
+
 
 ## Метрики качества
 
@@ -72,18 +97,43 @@
 ## Исходный формат хранения данных
 
 Обучающая выборка состоит из изображений в формате RGB, название файлов содержит название породы животного.
-Каждое изображение имеет разный размер.
-Данные никак не группированы.
+Все изображения лежат в одной папке. Данные никак не группированы.
 
 ## Подготовка входных данных
 
-Подготовка включает в себя подготовку csv файла с данными о названии класса и пути к изображению для каждого обучающего элемента.
+Подготовка включает в себя заполнение csv файла с данными о названии класса и пути к изображению для каждого обучающего элемента.
 
-Подготовка изображений включала в себя следующие действия: 
-1. Приведение изображений к одному размеру (32x32)
+#### Образец заполнения файла
+
+Category | Path
+------------- | -------------
+pug | ./images/pug_114.jpg
+pug | ./images/pug_100.jpg
+pug | ./images/pug_101.jpg
+pug | ./images/pug_115.jpg
+pug | ./images/pug_93.jpg
+pug | ./images/pug_87.jpg
+Birman | ./images/Birman_175.jpg
+Birman | ./images/Birman_161.jpg
+Birman | ./images/Birman_4.jpg
+Birman | ./images/Birman_67.jpg
+Birman | ./images/Birman_73.jpg
+
+Приведем изображения к одному размеру ***(224x224)***. Изображения с меньшим размером использовать не будем, а с большим размером уменьшим с помощью метода ***bicubic interpolation***. Было отброшено ***3,9%*** изображений.
+
+#### Разделение данных
+
+Датасет был разделен на три части. Элементы классов были равномерно распределены по частям, в следующих пропорциях.
+
+Часть | Процент изображений
+:-------------:|:-------------:
+Тренировочная | 90%
+Валидационная | 5%
+Тестовая      | 5%
 
 
 Так как загрузка всех изображений выборки является затратной по памяти операцией,
 для передачи входных данных в модели использовались генераторы, которые случайным образом достают
-batch изображений. Размер используемого batch_size = 64.
+batch изображений. Размер используемого ***batch_size=32***
+
 
