@@ -14,13 +14,25 @@
 
 В наших моделях было использовано:
 
-- Функция активации Relu на скрытых слоях: ![relu](https://latex.codecogs.com/gif.latex?relu%28x%29%20%3D%20%5Cmax%20%280%2C%20x%29)
-- Функция активации SoftMax на выходном слое: ![softmax](https://latex.codecogs.com/gif.latex?softmax%28x%29%20%3D%20%5Cfrac%7Be%5E%7Bx%7D%7D%7B%5Csum_%7Bk%3D1%7D%5E%7BK%7De%5E%7Bx_%7Bk%7D%7D%7D)
-- Слой BatchNormalization. Этот слой нормализует данные по батчу: сводит математическое ожидание к 0 и дисперсию к 1. [Wiki](https://en.wikipedia.org/wiki/Batch_normalization)
-- Слой Dropout для случайного отключения n нейронов, при ***n=70%***
-- GlobalAveragePooling2D для усреднения значения по каналам.
-- Оптимизатор Adam, adaptive momentum. ***Used learning rate = 1e-2***
-- Инициализация начальных весов с помощью Xavier.
+- Функция активации Relu на скрытых слоях: 
+![relu](https://latex.codecogs.com/gif.latex?relu%28x%29%20%3D%20%5Cmax%20%280%2C%20x%29)
+- Функция активации SoftMax на выходном слое: 
+![softmax](https://latex.codecogs.com/gif.latex?softmax%28x%29%20%3D%20%5Cfrac%7Be%5E%7Bx%7D%7D%7B%5Csum_%7Bk%3D1%7D%5E%7BK%7De%5E%7Bx_%7Bk%7D%7D%7D)
+
+- Слой BatchNormalization. Этот слой нормализует данные по батчу: сводит математическое ожидание к 0 и дисперсию к 1 ([arxiv](https://arxiv.org/abs/1502.03167))
+
+- Слой Dropout, который случайным образом отключает часть нейронов. Это позволяет предотвратить переобучение, путем тренировки некого ансамбля сетей ([arxiv](https://arxiv.org/abs/1207.0580))
+
+- GlobalAveragePooling2D, который берет среднее по всем каналам. Это позволяет сильно уменьшить количество обучаемых параметров на классификационном Dense слое, что в свою очередь помогает бороться с переобучением
+
+- Оптимизатор Adam - adaptive momentum ([arxiv](https://arxiv.org/abs/1412.6980v9)).  ***Learning rate=1e-2*** , установлен по умолчанию в выбранной библиотеке
+![m](https://latex.codecogs.com/gif.latex?m_%7Bt%7D%20%3D%20%5Cbeta_1%20m_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_1%29%20%5Cnabla%20f%28x_t%29)
+![v](https://latex.codecogs.com/gif.latex?v_%7Bt%7D%20%3D%20%5Cbeta_2%20v_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_2%29%20%5Cnabla%20%28f%28x_t%29%29%5E2)
+![hat_m](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bm_t%7D%20%3D%20%5Cfrac%7Bm_t%7D%7B1%20-%20%5Cbeta_%7B1%7D%5Et%7D)
+![hat_v](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bv_t%7D%20%3D%20%5Cfrac%7Bv_t%7D%7B1%20-%20%5Cbeta_%7B2%7D%5Et%7D)
+![x](https://latex.codecogs.com/gif.latex?x_%7Bt&plus;1%7D%20%3D%20x_t%20-%20%5Calpha%20%5Cfrac%7B%5Cwidehat%7Bm_t%7D%7D%7B%5Csqrt%7B%5Cwidehat%7Bv_t%7D%7D%20&plus;%20%5Cvarepsilon%7D)
+
+- Инициализация начальных весов с помощью Xavier uniform initializer, установлен по умолчанию в выбранной библиотеке
 
 
 ## Конфигурации моделей
