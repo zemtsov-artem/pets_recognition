@@ -6,3 +6,7 @@ __pycache__/
 # generated data
 *.csv
 fully_connected/fc_checkpoints/
+
+*.h5
+
+.ipynb_checkpoints/
