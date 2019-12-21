@@ -1,0 +1,104 @@
+# Convolutional
+
+## TODO:
+
+- Инициализация начальных весов с помощью Xavier uniform initializer, установлен по умолчанию в выбранной библиотеке
+
+- таблицы конфигураций для каждого типа
+
+## [Введение](../README.md)
+
+Вся проведенная работа содержится в Jupiter-ноутбуке [main.ipynb](main.ipynb). Файл включает в себя:
+
+* Подготовку тестовых, тренировочных, валидационных данных
+* Создание моделей
+* Обучение моделей
+* Визуализацию каждого шага
+* Тестирование модели с использованием тестовых данных
+
+## Теория
+
+В наших моделях было использовано:
+
+- Мы испольвали сеть ResNet50
+
+![ResNet50](../resources/resnet50.png)
+
+
+Для использования transfer-learning последний слой был заменен на классификатор для наших данных. Который включает в себя:
+
+- GlobalAveragePooling2D, который берет среднее по всем каналам. Это позволяет сильно уменьшить количество обучаемых параметров на классификационном Dense слое, что в свою очередь помогает бороться с переобучением
+
+- Слой Dropout, который случайным образом отключает часть нейронов. Это позволяет предотвратить переобучение, путем тренировки некого ансамбля сетей ([arxiv](https://arxiv.org/abs/1207.0580))
+
+- Функция активации SoftMax на выходном полносвязном слое: 
+
+![softmax](https://latex.codecogs.com/gif.latex?softmax%28x%29%20%3D%20%5Cfrac%7Be%5E%7Bx%7D%7D%7B%5Csum_%7Bk%3D1%7D%5E%7BK%7De%5E%7Bx_%7Bk%7D%7D%7D)
+
+- Оптимизатор Adam - adaptive momentum ([arxiv](https://arxiv.org/abs/1412.6980v9)).  ***Learning rate=1e-2*** , установлен по умолчанию в выбранной библиотеке
+
+![m](https://latex.codecogs.com/gif.latex?m_%7Bt%7D%20%3D%20%5Cbeta_1%20m_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_1%29%20%5Cnabla%20f%28x_t%29)
+
+![v](https://latex.codecogs.com/gif.latex?v_%7Bt%7D%20%3D%20%5Cbeta_2%20v_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_2%29%20%5Cnabla%20%28f%28x_t%29%29%5E2)
+
+![hat_m](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bm_t%7D%20%3D%20%5Cfrac%7Bm_t%7D%7B1%20-%20%5Cbeta_%7B1%7D%5Et%7D)
+
+![hat_v](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bv_t%7D%20%3D%20%5Cfrac%7Bv_t%7D%7B1%20-%20%5Cbeta_%7B2%7D%5Et%7D)
+
+![x](https://latex.codecogs.com/gif.latex?x_%7Bt&plus;1%7D%20%3D%20x_t%20-%20%5Calpha%20%5Cfrac%7B%5Cwidehat%7Bm_t%7D%7D%7B%5Csqrt%7B%5Cwidehat%7Bv_t%7D%7D%20&plus;%20%5Cvarepsilon%7D)
+
+#### Аугментация для наших изображений
+- случайный поворот на 10 градусов
+- случайное зуммирование на 10%
+- случайное изменение яркости в диапозоне [0.7, 1.3]
+- случайное горизонтальное отображение
+
+## Перенос обучения
+
+В рамках данной лабораторной работы были проведены эксперементы с следующими типами переноса обучения:
+
+#### Первый тип переноса обучения
+
+Берем предобученную сеть ResNet-50, заменяем последние слои для классификации на свои для последующего обучения. Всем слоям из ResNet ставим флаг trainable=False.
+
+![Model Accuracy](../resources/transferLearnning1acc.png)
+
+![Model Loss](../resources/transferLearnning1loss.png)
+
+#### Второй тип переноса обучения
+
+Берем предобученную сеть ResNet-50, заменяем последние слои для классификации на свои. Всем слоям из ResNet ставим флаг trainable=True, для их дообучения под нашу задачу.
+
+![Model Accuracy](../resources/transferLearnning2acc.png)
+
+![Model Loss](../resources/transferLearnning2loss.png)
+
+#### Третий тип переноса обучения
+
+Берем необученную сеть ResNet-50, заменяем последние слои для классификации на свои. Пытаемся обучить полученную архитектуру с нуля.
+
+![Model Accuracy](../resources/transferLearnning3acc.png)
+
+![Model Loss](../resources/transferLearnning3loss.png)
+
+## Тестирование
+
+Наилучшие результаты были получены для второго типа переноса обучения.
+
+| loss   | accuracy |
+|:------:|:--------:|
+| 0.6234709247946739 | 0.825   |
+
+### Пример
+
+Запустим модель и попробуем определить породу для данного изображения 
+
+![wheaten_terrier](../resources//wheaten_terrier.png)
+
+Expected category : wheaten_terrier
+
+| Category | without data aug |
+|:--------:|:----------------:|
+|wheaten_terrier    | 0.98815745 |
+|havanese   |0.0051027923        |
+|scottish_terrier   | 0.0036167  |
