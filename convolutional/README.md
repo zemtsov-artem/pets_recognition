@@ -26,22 +26,23 @@
 
 - Слой Dropout, который случайным образом отключает часть нейронов. Это позволяет предотвратить переобучение, путем тренировки некого ансамбля сетей ([arxiv](https://arxiv.org/abs/1207.0580))
 
-- GlobalAveragePooling2D, который берет среднее по всем каналам. Это позволяет сильно уменьшить количество обучаемых параметров на классификационном Dense слое, что в свою очередь помогает бороться с переобучением
+- Слой GlobalAveragePooling2D, который берет среднее по всем каналам. Это позволяет сильно уменьшить количество обучаемых параметров на классификационном Dense слое, что в свою очередь помогает бороться с переобучением
 
 - Оптимизатор Adam - adaptive momentum ([arxiv](https://arxiv.org/abs/1412.6980v9)).  ***Learning rate=1e-2*** , установлен по умолчанию в выбранной библиотеке
 
-![m](https://latex.codecogs.com/gif.latex?m_%7Bt%7D%20%3D%20%5Cbeta_1%20m_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_1%29%20%5Cnabla%20f%28x_t%29)
-
+![m](https://latex.codecogs.com/gif.latex?m_%7Bt%7D%20%3D%20%5Cbeta_1%20m_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_1%29%20%5Cnabla%20f%28x_t%29)     
 ![v](https://latex.codecogs.com/gif.latex?v_%7Bt%7D%20%3D%20%5Cbeta_2%20v_%7Bt-1%7D%20&plus;%20%281%20-%20%5Cbeta_2%29%20%5Cnabla%20%28f%28x_t%29%29%5E2)
 
-![hat_m](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bm_t%7D%20%3D%20%5Cfrac%7Bm_t%7D%7B1%20-%20%5Cbeta_%7B1%7D%5Et%7D)
-
+![hat_m](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bm_t%7D%20%3D%20%5Cfrac%7Bm_t%7D%7B1%20-%20%5Cbeta_%7B1%7D%5Et%7D)     
 ![hat_v](https://latex.codecogs.com/gif.latex?%5Cwidehat%7Bv_t%7D%20%3D%20%5Cfrac%7Bv_t%7D%7B1%20-%20%5Cbeta_%7B2%7D%5Et%7D)
 
 ![x](https://latex.codecogs.com/gif.latex?x_%7Bt&plus;1%7D%20%3D%20x_t%20-%20%5Calpha%20%5Cfrac%7B%5Cwidehat%7Bm_t%7D%7D%7B%5Csqrt%7B%5Cwidehat%7Bv_t%7D%7D%20&plus;%20%5Cvarepsilon%7D)
 
-- Инициализация начальных весов с помощью Xavier uniform initializer, установлен по умолчанию в выбранной библиотеке
+ - Функция ошибки ***categorical cross-entropy*** для классификации на несколько классов:
 
+ ![crossentropy](https://latex.codecogs.com/gif.latex?categorical%5C_crossentropy%20%3D%20-%20%5Cfrac%7B1%7D%7BN%7D%20%5Csum_%7Bi%3D1%7D%5E%7BN%7D%20y_i%20%5Ccdot%20%5Clog%28%5Chat%7By_i%7D%29)
+
+- Инициализация начальных весов с помощью Xavier uniform initializer, установлен по умолчанию в выбранной библиотеке
 
 ## Конфигурации моделей
 
@@ -68,10 +69,13 @@
 Total params: 25,930,789
 
 ![Model Accuracy](models_img/model1Acc.png)
-
 ![Model Loss](models_img/model1Loss.png)
 
+Наблюдается переобучение, в связи с разношерстностью данных, о которой упоминалось в предыдущих работах.
+
 2. ***Сверточная модель с использованием Batch Normalization + Global Pooling***
+
+Добавим в модель слой GlobalAveragePooling2D для уменьшения количества обучаемых параметров. Также добавим слой BatchNormalization, чтобы проэкспементировать со скоростью сходимости модели.
 
 [//]: #![](models_img/size=3,lr=0.001,use_dropout=False,use_batchnorm=True,use_globalpool=True.png)
 
@@ -101,7 +105,6 @@ Total params: 25,930,789
 Total params: 1,128,997
 
 ![Model Accuracy](models_img/model2Acc.png)
-
 ![Model Loss](models_img/model2Loss.png)
 
 Переобучение снизилось. Точность на тренировочной выборке возросла до 0,68. Сходится модель намного быстрее благодаря слоям батч нормализации. Попробуем добавить дропаут перед слоем классификации, чтобы еще снизить переобучение.
@@ -137,12 +140,12 @@ Total params: 1,128,997
 Total params: 1,128,997
 
 ![Model Accuracy](models_img/model3Acc.png)
-
 ![Model Loss](models_img/model3Loss.png)
 
 Большой процент дропаута сильно помог с переубучением! Сохраним на состояние модели для последующих тестов.
 
 #### Попробуем применить аугментацию наших изображений
+
 - случайный поворот на 10 градусов
 - случайное зуммирование на 10%
 - случайное изменение яркости в диапозоне [0.7, 1.3]
@@ -151,13 +154,11 @@ Total params: 1,128,997
 Это должно привести к более стабильным результатам. Используем предыдущую архитектуру сети, т.к. она дала самые лучшие результаты.
 
 ![Model Accuracy](models_img/model4Acc.png)
-
 ![Model Loss](models_img/model4Loss.png)
 
 Как видно из графика сильно это не помогло. Предположение: уменьшить learning rate, возможно модель зависла на плато и сойдется еще чуть-чуть. Используем lr=0.0003, как советовал ***Andrej Karpathy*** в своем [твиттере](https://twitter.com/karpathy/status/801621764144971776) =D
 
 ![Model Accuracy](models_img/model5Acc.png)
-
 ![Model Loss](models_img/model5Loss.png)
 
 ***+12% точности*** на валидационной выборке! Неплохо. Остановимся на этом и сохраним модель.
